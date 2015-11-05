@@ -66,11 +66,10 @@ public class UIDialog {
 	/** 评论dialog */
 	public static EditText commentLayout(Context context, OnClickListener lisener) {
 		dialog = new AlertDialog.Builder(context).create();
-		//dialog.setView(((Activity)context).getLayoutInflater().inflate(R.layout.dialog_comment, null));
 		dialog.show();
 		Window window = dialog.getWindow();
 		window.clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
-		window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN| WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+		window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 		// *** 主要就是在这里实现这种效果的.
 		// 设置窗口的内容页面,shrew_exit_dialog.xml文件中定义view内容
 		window.setContentView(R.layout.dialog_comment);

@@ -1,6 +1,8 @@
 package com.zykj.xishuashua.activity;
 
+import android.graphics.Point;
 import android.os.Bundle;
+import android.widget.TextView;
 
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
@@ -8,12 +10,14 @@ import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.InfoWindow;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.model.LatLng;
 import com.zykj.xishuashua.BaseActivity;
+import com.zykj.xishuashua.BaseApp;
 import com.zykj.xishuashua.R;
 import com.zykj.xishuashua.view.MyCommonTitle;
 
@@ -25,7 +29,7 @@ public class MapActivity extends BaseActivity{
 	
 	private LocationClient mLocationClient;
 	private MyLocationListener mLocationListener;
-	private String latitude,longitude;
+	private String latitude,longitude,address;
 	
 	private boolean isFirstIn = true;
 
@@ -34,8 +38,9 @@ public class MapActivity extends BaseActivity{
 		super.onCreate(savedInstanceState);
 		SDKInitializer.initialize(getApplicationContext());
 		initView(R.layout.ui_map_activity);
-		latitude = getIntent().getStringExtra("lat");
-		longitude = getIntent().getStringExtra("long");
+		latitude = getIntent().getStringExtra("lat");//BaseApp.getModel().getLatitude();
+		longitude = getIntent().getStringExtra("long");//BaseApp.getModel().getLongitude();
+		address = getIntent().getStringExtra("address");
 
 		initView();
 		initLocation();
@@ -65,13 +70,36 @@ public class MapActivity extends BaseActivity{
 				.build();
 			mBaiduMap.setMyLocationData(data);
 			
+			final LatLng latLng = new LatLng(Double.valueOf(latitude), Double.valueOf(longitude));
 			if(isFirstIn){
-				LatLng latLng = new LatLng(Double.valueOf(latitude), Double.valueOf(longitude));
 				//LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 				MapStatusUpdate msu = MapStatusUpdateFactory.newLatLng(latLng);
 				mBaiduMap.animateMapStatus(msu);
 				isFirstIn = false;
 			}
+			final TextView tv = new TextView(MapActivity.this);
+			tv.setBackgroundResource(R.drawable.bg_round_grey);
+			tv.setPadding(30, 10, 30, 10);
+			tv.setText(address);
+			
+//			Point p = mBaiduMap.getProjection().toScreenLocation(latLng);
+//			p.y -= 27;
+//			LatLng ll = mBaiduMap.getProjection().fromScreenLocation(p);
+//			
+//			InfoWindow infoWindow = new InfoWindow(tv, ll, 0);
+//			mBaiduMap.showInfoWindow(infoWindow);
+
+			mBaiduMap.setOnMapLoadedCallback(new BaiduMap.OnMapLoadedCallback() {
+				@Override
+				public void onMapLoaded() {
+					Point p = mBaiduMap.getProjection().toScreenLocation(latLng);
+					p.y -= 27;
+					LatLng ll = mBaiduMap.getProjection().fromScreenLocation(p);
+					
+					InfoWindow infoWindow = new InfoWindow(tv, ll, 0);
+					mBaiduMap.showInfoWindow(infoWindow);
+				}
+			});
 		}
 	}
 
@@ -123,26 +151,3 @@ public class MapActivity extends BaseActivity{
 		mMapView.onPause();
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

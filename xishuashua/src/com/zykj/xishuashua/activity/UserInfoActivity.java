@@ -4,13 +4,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -18,10 +20,14 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,36 +37,44 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.zykj.xishuashua.BaseActivity;
 import com.zykj.xishuashua.BaseApp;
 import com.zykj.xishuashua.R;
+import com.zykj.xishuashua.adapter.MyAdapter;
 import com.zykj.xishuashua.http.AbstractHttpHandler;
 import com.zykj.xishuashua.http.HttpErrorHandler;
 import com.zykj.xishuashua.http.HttpUtils;
 import com.zykj.xishuashua.http.UrlContants;
+import com.zykj.xishuashua.utils.DateUtil;
+import com.zykj.xishuashua.utils.StringUtil;
 import com.zykj.xishuashua.utils.Tools;
-import com.zykj.xishuashua.view.MyAlertView;
 import com.zykj.xishuashua.view.MyCommonTitle;
-import com.zykj.xishuashua.view.NumericWheelAdapter;
-import com.zykj.xishuashua.view.OnWheelChangedListener;
+import com.zykj.xishuashua.view.MyDialog;
 import com.zykj.xishuashua.view.RoundImageView;
 import com.zykj.xishuashua.view.UIDialog;
-import com.zykj.xishuashua.view.WheelView;
 
 public class UserInfoActivity extends BaseActivity{
 
 	private String timeString;//上传头像的字段
 	private MyCommonTitle myCommonTitle;
 	private RoundImageView rv_me_avatar;
-//	private ImageView titleBack;
-	private LinearLayout layout_age,layout_sex,layout_address,layout_updpwd;
-	private TextView user_age,user_sex,user_address;
+	private LinearLayout layout_age,layout_sex,layout_name,layout_phone,layout_updpwd;
+	private TextView user_age,user_sex,user_name,user_phone;
 	private boolean flag = false;
 	private Button app_login_out;
-	private int selectval;
+	private int oldPosition = -1;
+
+	private ArrayList<String> firstname;
+	private ArrayList<String> secondname;
+    private ListView listview,listview1;
+	public static final String ENCODING = "UTF-8";
+    private MyAdapter myAdapter,myAdapter2;
+    private String aa,bb;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ui_user_info);
-		
+
+		firstname = new ArrayList<String>();
+		secondname = new ArrayList<String>();
 		initView();
 		requestData();
 	}
@@ -71,27 +85,21 @@ public class UserInfoActivity extends BaseActivity{
 	private void initView() {
 		myCommonTitle = (MyCommonTitle)findViewById(R.id.aci_mytitle);
 		myCommonTitle.setTitle("用户");
-//		titleBack = (ImageView)findViewById(R.id.aci_back_btn);
-//		
-//		titleBack.setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View arg0) {
-//				setResult(Activity.RESULT_OK, getIntent().putExtra("login_out", "clear"));
-//				finish();
-//			}
-//		});
 
 		rv_me_avatar = (RoundImageView)findViewById(R.id.rv_me_avatar);//头像
 		layout_age = (LinearLayout)findViewById(R.id.layout_age);//年龄
 		user_age = (TextView)findViewById(R.id.user_age);//年龄
 		layout_sex = (LinearLayout)findViewById(R.id.layout_sex);//性别
 		user_sex = (TextView)findViewById(R.id.user_sex);//性别
-		layout_address = (LinearLayout)findViewById(R.id.layout_address);//常驻地
-		user_address = (TextView)findViewById(R.id.user_address);//常驻地
+		layout_name = (LinearLayout)findViewById(R.id.layout_name);//用户名
+		user_name = (TextView)findViewById(R.id.user_name);//用户名
+		layout_phone = (LinearLayout)findViewById(R.id.layout_phone);//手机号
+		layout_phone.setVisibility(StringUtil.isEmpty(BaseApp.getModel().getMobile())?View.GONE:View.VISIBLE);
+		user_phone = (TextView)findViewById(R.id.user_phone);//用户名
 		layout_updpwd = (LinearLayout)findViewById(R.id.layout_updpwd);//修改密码
 		app_login_out = (Button)findViewById(R.id.app_login_out);//退出
 		
-		setListener(rv_me_avatar, layout_age, layout_sex, layout_address, layout_updpwd, app_login_out);
+		setListener(rv_me_avatar, layout_age, layout_sex, layout_name, layout_updpwd, app_login_out);
 	}
 
 	/**
@@ -99,23 +107,27 @@ public class UserInfoActivity extends BaseActivity{
 	 */
 	private void requestData(){
 		RequestParams params = new RequestParams();
-		params.put("login_name", BaseApp.getModel().getUsername());
-		params.put("login_password", BaseApp.getModel().getPassword());
-		params.put("lati", BaseApp.getModel().getLatitude());
-		params.put("longi", BaseApp.getModel().getLongitude());
-        HttpUtils.login(new AbstractHttpHandler() {
+		params.put("member_id", BaseApp.getModel().getUserid());
+        HttpUtils.getMemberInfo(new AbstractHttpHandler() {
 			@Override
 			public void onJsonSuccess(JSONObject json) {
-		       String status= json.getString("result");
+				String status= json.getString("result");
 		        if(TextUtils.isEmpty(status) || !status.equals("1")){
 		            Tools.toast(UserInfoActivity.this, "账号密码错误");
 		        }else{
 					JSONObject data = json.getJSONObject("data");
 					String sex = data.getString("member_sex");
-					user_age.setText(data.getString("member_areaid"));//年龄
+					String birthday = data.getString("member_quicklink");
+					if(birthday != null && birthday.length() == 6){
+						user_age.setText(birthday.substring(0, 4)+'年'+birthday.substring(4)+"月");//出生年月
+					}else{
+						user_age.setText("请选择");//出生年月
+					}
 					user_sex.setText("1".equals(sex)?"男":"2".equals(sex)?"女":"选择");//性别
-					user_address.setText(data.getString("member_areainfo"));//常驻地
-					ImageLoader.getInstance().displayImage(UrlContants.ABATARURL+BaseApp.getModel().getAvatar(), rv_me_avatar);//用户头像
+					user_name.setText(data.getString("member_name"));
+					user_phone.setText(data.getString("member_phone"));
+					String avatar = BaseApp.getModel().getAvatar();
+					ImageLoader.getInstance().displayImage(avatar.contains("http")?avatar:UrlContants.ABATARURL+avatar, rv_me_avatar);//用户头像
 		        }
 			}
 		}, params);
@@ -129,14 +141,29 @@ public class UserInfoActivity extends BaseActivity{
 			UIDialog.ForThreeBtn(this, new String[]{"相册", "拍照", "取消"}, this);
 			break;
 		case R.id.layout_age:
-			showDateTimePicker();
+			initPopWindowForCitys();
 			break;
 		case R.id.layout_sex:
 			flag = false;
 			UIDialog.ForThreeBtn(this, new String[]{"男", "女", "取消"}, this);
 			//showDateTimePicker("请选择性别", "sex");
 			break;
-		case R.id.layout_address:
+		case R.id.layout_name:
+			new MyDialog(this, R.style.MyDialog, "昵称", "确定", "取消",
+					new MyDialog.DialogClickListener() {
+						@Override
+						public void onRightBtnClick(Dialog dialog) {
+							dialog.dismiss();
+						}
+						@Override
+						public void onLeftBtnClick(Dialog dialog) {
+							EditText tv_edit = (EditText)dialog.findViewById(R.id.tv_edit);
+							if(!StringUtil.isEmpty(tv_edit.getText().toString().trim())){
+								updateCurrentUserName(tv_edit.getText().toString().trim());
+							}
+							dialog.dismiss();
+						}
+					}, true).show();
 			break;
 		case R.id.layout_updpwd:
 			startActivity(new Intent(UserInfoActivity.this, UserUpdPwdActivity.class)
@@ -148,9 +175,9 @@ public class UserInfoActivity extends BaseActivity{
 			finish();
 			break;
 		case R.id.dialog_modif_1:
+			UIDialog.closeDialog();
 			if(flag){
 				/*选择相册*/
-				UIDialog.closeDialog();
 				/**
 				 * 刚开始，我自己也不知道ACTION_PICK是干嘛的，后来直接看Intent源码，
 				 * 可以发现里面很多东西，Intent是个很强大的东西，大家一定仔细阅读下
@@ -172,9 +199,9 @@ public class UserInfoActivity extends BaseActivity{
 			}
 			break;
 		case R.id.dialog_modif_2:
+			UIDialog.closeDialog();
 			if(flag){
 				/*点击拍照*/
-				UIDialog.closeDialog();
 				/**
 				 * 下面这句还是老样子，调用快速拍照功能，至于为什么叫快速拍照，大家可以参考如下官方
 				 * 文档，you_sdk_path/docs/guide/topics/media/camera.html
@@ -344,51 +371,51 @@ public class UserInfoActivity extends BaseActivity{
 	/**
 	 * @Description: 弹出日期时间选择器
 	 */
-	private void showDateTimePicker() {
-		// 找到dialog的布局文件
-		LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-		View view2 = inflater.inflate(R.layout.dialog_wheelview_bg, null);
-		// 年
-		final WheelView wv_wheel = (WheelView) view2.findViewById(R.id.wheel);
-		wv_wheel.setAdapter(new NumericWheelAdapter(6, 80));// 设置"年龄"的显示数据
-		wv_wheel.setCyclic(true);// 可循环滚动
-		wv_wheel.setCurrentItem(3);// 初始化时显示的数据
-		int textSize = 50;
-
-		wv_wheel.TEXT_SIZE = textSize;
-		wv_wheel.addChangingListener(new OnWheelChangedListener() {
-			@Override
-			public void onChanged(WheelView wheel, int oldValue, int newValue) {
-				selectval=wv_wheel.getCurrentItem()+6;//年龄
-			}
-		});
-		onCreateDialog("请选择年龄", null, view2).show();
-	}
+//	private void showDateTimePicker() {
+//		// 找到dialog的布局文件
+//		LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+//		View view2 = inflater.inflate(R.layout.dialog_wheelview_bg, null);
+//		// 年
+//		final WheelView wv_wheel = (WheelView) view2.findViewById(R.id.wheel);
+//		wv_wheel.setAdapter(new NumericWheelAdapter(6, 80));// 设置"年龄"的显示数据
+//		wv_wheel.setCyclic(true);// 可循环滚动
+//		wv_wheel.setCurrentItem(3);// 初始化时显示的数据
+//		int textSize = 50;
+//
+//		wv_wheel.TEXT_SIZE = textSize;
+//		wv_wheel.addChangingListener(new OnWheelChangedListener() {
+//			@Override
+//			public void onChanged(WheelView wheel, int oldValue, int newValue) {
+//				selectval=wv_wheel.getCurrentItem()+6;//年龄
+//			}
+//		});
+//		onCreateDialog("请选择年龄", null, view2).show();
+//	}
 	/**
 	 * 启动dialog的方法
 	 * 
 	 * @return Dialog
 	 */
-	public Dialog onCreateDialog(String title, String body, View view) {
-		Dialog dialog = null;
-		MyAlertView.Builder customBuilder = new MyAlertView.Builder(this);
-		customBuilder.setTitle(title).setMessage(body).setContentView(view)
-				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-						if(selectval != 0){
-							updateCurrentUserAge();
-						}
-					}
-				})
-				.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				});
-		dialog = customBuilder.create();
-		return dialog;
-	}
+//	public Dialog onCreateDialog(String title, String body, View view) {
+//		Dialog dialog = null;
+//		MyAlertView.Builder customBuilder = new MyAlertView.Builder(this);
+//		customBuilder.setTitle(title).setMessage(body).setContentView(view)
+//				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+//					public void onClick(DialogInterface dialog, int which) {
+//						dialog.dismiss();
+//						if(selectval != 0){
+//							updateCurrentUserAge();
+//						}
+//					}
+//				})
+//				.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//					public void onClick(DialogInterface dialog, int which) {
+//						dialog.dismiss();
+//					}
+//				});
+//		dialog = customBuilder.create();
+//		return dialog;
+//	}
 	
 	/**
 	 * 更新用户年龄
@@ -396,11 +423,11 @@ public class UserInfoActivity extends BaseActivity{
 	private void updateCurrentUserAge(){
 		RequestParams params = new RequestParams();
 		params.put("member_id", BaseApp.getModel().getUserid());
-		params.put("member_age", selectval);
+		params.put("member_age", aa + bb);
 		HttpUtils.uploadMemberInfo(new HttpErrorHandler() {
 			@Override
 			public void onRecevieSuccess(JSONObject json) {
-				user_age.setText(""+selectval);//年龄
+				user_age.setText(aa+"年"+bb+"月");//出生年月
 			}
 			@Override
 			public void onRecevieFailed(String status, JSONObject json) {
@@ -427,4 +454,196 @@ public class UserInfoActivity extends BaseActivity{
 			}
 		},params);
 	}
+	
+	/**
+	 * 更新用户名
+	 */
+	private void updateCurrentUserName(final String name){
+		RequestParams params = new RequestParams();
+		params.put("member_id", BaseApp.getModel().getUserid());
+		params.put("member_name", name);
+		HttpUtils.uploadMemberInfo(new HttpErrorHandler() {
+			@Override
+			public void onRecevieSuccess(JSONObject json) {
+				user_name.setText(name);//用户名
+				BaseApp.getModel().setUsername(name);
+			}
+			@Override
+			public void onRecevieFailed(String status, JSONObject json) {
+				Tools.toast(UserInfoActivity.this, json.getString("message"));
+			}
+		},params);
+	}
+	
+	/**
+	 * 更新用户手机号
+	 */
+//	private void updateCurrentUserPhone(final String phone){
+//		RequestParams params = new RequestParams();
+//		params.put("member_id", BaseApp.getModel().getUserid());
+//		params.put("member_phone", phone);
+//		HttpUtils.uploadMemberInfo(new HttpErrorHandler() {
+//			@Override
+//			public void onRecevieSuccess(JSONObject json) {
+//				user_phone.setText(phone);//手机号
+//				BaseApp.getModel().setMobile(phone);
+//			}
+//			@Override
+//			public void onRecevieFailed(String status, JSONObject json) {
+//				Tools.toast(UserInfoActivity.this, json.getString("message"));
+//			}
+//		},params);
+//	}
+	
+	/**
+	 * 更新年龄
+	 */
+//	private void updateCurrentUserAddress(final String birthday){
+//		RequestParams params = new RequestParams();
+//		params.put("member_id", BaseApp.getModel().getUserid());
+//		params.put("member_age", birthday);
+//		HttpUtils.uploadMemberInfo(new HttpErrorHandler() {
+//			@Override
+//			public void onRecevieSuccess(JSONObject json) {
+//				user_address.setText(birthday.substring(0, 4)+'年'+birthday.substring(4)+"月");//出生年月
+//			}
+//			@Override
+//			public void onRecevieFailed(String status, JSONObject json) {
+//				Tools.toast(UserInfoActivity.this, json.getString("message"));
+//			}
+//		},params);
+//	}
+	
+	private void initPopWindowForCitys(){
+		final AlertDialog dialog = new AlertDialog.Builder(this).create();
+		dialog.show();
+		Window window = dialog.getWindow();
+		window.setContentView(R.layout.wheelpopupforcity);
+		
+		listview = (ListView) window.findViewById(R.id.list);
+		listview1 = (ListView) window.findViewById(R.id.list1);
+		TextView btn_city_canle = (TextView) window.findViewById(R.id.pickcitycancle);
+		btn_city_canle.getPaint().setFakeBoldText(true);
+		btn_city_canle.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				dialog.dismiss();
+			}
+		});
+		firstname.clear();
+		secondname.clear();
+		int year = Integer.valueOf(DateUtil.dateToString(new Date(), "yyyy"));
+		for (int i = 0; i < 100; i++) {
+			firstname.add(String.valueOf(year-99+i)+"a");
+		}
+		for (int i = 0; i < 12; i++) {
+			secondname.add(String.valueOf(i+1));
+		}
+		myAdapter = new MyAdapter(this, firstname);
+		myAdapter2 = new MyAdapter(this, secondname);
+		listview.setAdapter(myAdapter);
+		listview1.setAdapter(myAdapter2);
+		listview.setSelection(75);
+		firstname.set(75, firstname.get(75).substring(0, 4)+"b");
+		oldPosition = 75;
+		aa = firstname.get(75).substring(0, 4);
+		listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View convertView, int position, long selectid) {
+				firstname.set(oldPosition, firstname.get(oldPosition).substring(0, 4)+"a");
+				oldPosition = position;
+				firstname.set(oldPosition, firstname.get(position).substring(0, 4)+"b");
+				aa = firstname.get(position).substring(0, 4);
+				myAdapter.notifyDataSetChanged();
+			}
+		});
+		listview1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View convertView, int position, long id) {
+				bb = new DecimalFormat("00").format(Integer.valueOf(secondname.get(position)));
+				dialog.dismiss();
+				Tools.toast(UserInfoActivity.this, aa+"年"+bb+"月");
+				updateCurrentUserAge();
+			}
+		});
+	}
+	
+//	public void initPopWindowForCitys() {
+//		final AlertDialog dialog = new AlertDialog.Builder(this).create();
+//		dialog.show();
+//		Window window = dialog.getWindow();
+//		window.setContentView(R.layout.wheelpopupforcity);
+//		
+//		listview = (ListView) window.findViewById(R.id.list);
+//		listview1 = (ListView) window.findViewById(R.id.list1);
+//		TextView btn_city_canle = (TextView) window.findViewById(R.id.pickcitycancle);
+//		btn_city_canle.getPaint().setFakeBoldText(true);
+//		btn_city_canle.setOnClickListener(new OnClickListener() {
+//			public void onClick(View v) {
+//				dialog.dismiss();
+//			}
+//		});
+//		String str1 = getFromAssets("leibie.json");
+//		JSONObject js = JSONObject.parseObject(str1);
+//		JSONArray areaBean = js.getJSONArray("areaBeans");
+//		list.clear();
+//		for (int i = 0; i < areaBean.size(); i++) {
+//			area = new Area();
+//			JSONObject json = (JSONObject) areaBean.get(i);
+//			area.setAreaid(json.getString("areaid"));
+//			area.setName(json.getString("name"));
+//			area.setPinyin(json.getString("pinyin"));
+//			area.setShortpinyin(json.getString("shortpinyin"));
+//			area.setType(json.getString("type"));
+//			area.setParentId(json.getString("parentId"));
+//			list.add(i, area);
+//		}
+//		firstname.clear();
+//		secondname.clear();
+//		for (int i = 0; i < list.size(); i++) {
+//			if (list.get(i).getType().equals("s")) {
+//				firstname.add(list.get(i));
+//			}
+//		}
+//		myAdapter = new MyAdapter(this, firstname);
+//		myAdapter2 = new MyAdapter(this, secondname);
+//		listview.setAdapter(myAdapter);
+//		listview1.setAdapter(myAdapter2);
+//		listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//			public void onItemClick(AdapterView<?> parent, View convertView, int position, long selectid) {
+//				secondname.clear();
+//				for (int i = 0; i < list.size(); i++) {
+//					String id = firstname.get(position).getAreaid();
+//					aa = firstname.get(position).getName();
+//					if (list.get(i).getType().equals("c")) {
+//						if (list.get(i).getParentId().equals(id)) {
+//							secondname.add(list.get(i));
+//						}
+//					}
+//				}
+//				myAdapter2.notifyDataSetChanged();
+//			}
+//		});
+//		listview1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//			public void onItemClick(AdapterView<?> parent, View convertView, int position, long id) {
+//				bb = secondname.get(position).getName();
+//				String cc = aa + bb;
+//				dialog.dismiss();
+//				updateCurrentUserAddress(cc);
+//			}
+//		});
+//	}
+//
+//	public String getFromAssets(String fileName) {
+//		String result = "";
+//		try {
+//			InputStream in = getResources().getAssets().open(fileName);
+//			int lenght = in.available();
+//			byte[] buffer = new byte[lenght];
+//			in.read(buffer);
+//			result = EncodingUtils.getString(buffer, ENCODING);
+//			in.close();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return result;
+//	}
 }

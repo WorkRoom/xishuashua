@@ -1,7 +1,6 @@
 package com.zykj.xishuashua.activity;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,7 +16,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.zykj.xishuashua.BaseActivity;
 import com.zykj.xishuashua.BaseApp;
 import com.zykj.xishuashua.R;
-import com.zykj.xishuashua.http.EntityHandler;
+import com.zykj.xishuashua.http.HttpErrorHandler;
 import com.zykj.xishuashua.http.HttpUtils;
 import com.zykj.xishuashua.http.UrlContants;
 import com.zykj.xishuashua.model.MyEnvelope;
@@ -87,8 +86,8 @@ public class UserActivity extends BaseActivity {
 			user_login.setVisibility(View.GONE);
 			rl_me_top.setOnClickListener(this);
 			String avatar = BaseApp.getModel().getAvatar();
-			tv_me_mobile.setText(StringUtil.isEmpty(BaseApp.getModel().getMobile())?BaseApp.getModel().getUsername():BaseApp.getModel().getMobile());//默认账户
-			ImageLoader.getInstance().displayImage(UrlContants.ABATARURL+avatar, rv_me_avatar);//用户头像
+			tv_me_mobile.setText(StringUtil.isEmpty(BaseApp.getModel().getUsername())?BaseApp.getModel().getMobile():BaseApp.getModel().getUsername());//默认账户
+			ImageLoader.getInstance().displayImage(avatar.contains("http")?avatar:UrlContants.ABATARURL+avatar, rv_me_avatar);//用户头像
 			getmemberenvelopes();
 		}else{
 			tv_me_mobile.setVisibility(View.GONE);
@@ -103,27 +102,45 @@ public class UserActivity extends BaseActivity {
 	
 	private void getmemberenvelopes(){
 		MyRequestDailog.showDialog(this, "");
-		HttpUtils.getmemberenvelopes(new EntityHandler<MyEnvelope>(MyEnvelope.class){
+		HttpUtils.available_predeposit(new HttpErrorHandler() {
 			@Override
-			public void onReadSuccess(List<MyEnvelope> list) {
-				envelist = (ArrayList<MyEnvelope>)list;
+			public void onRecevieSuccess(JSONObject json) {
 				MyRequestDailog.closeDialog();
-				float envelope = 0f;
-				for (MyEnvelope myEnvelope : list) {
-					envelope += Float.valueOf(myEnvelope.getMembersawgoods_gotpoint());
-					gift_money.setText(String.valueOf(envelope));//用户余额
-					gift_num.setText(list.size()+"");//用户资产
-					BaseApp.getModel().setMoney(String.valueOf(envelope));//红包金额
-					BaseApp.getModel().setNumber(list.size()+"");//红包个数
-				}
-			}
-			@Override
-			public void onRecevieFailed(String status, JSONObject json) {
-				Tools.toast(UserActivity.this, "请求失败");
-				super.onRecevieFailed(status, json);
+				JSONObject obj = json.getJSONObject("data");
+				String money = obj.getString("available_predeposit");
+				String goods = obj.getString("membersawgoods");
+
+				gift_money.setText(money);//用户余额
+				gift_num.setText(goods);//用户资产
+				BaseApp.getModel().setMoney(money);//红包金额
+				BaseApp.getModel().setNumber(goods);//红包个数
 			}
 		});
 	}
+	
+//	private void getmemberenvelopes(){
+//		MyRequestDailog.showDialog(this, "");
+//		HttpUtils.getmemberenvelopes(new EntityHandler<MyEnvelope>(MyEnvelope.class){
+//			@Override
+//			public void onReadSuccess(List<MyEnvelope> list) {
+//				envelist = (ArrayList<MyEnvelope>)list;
+//				MyRequestDailog.closeDialog();
+//				float envelope = 0f;
+//				for (MyEnvelope myEnvelope : list) {
+//					envelope += Float.valueOf(myEnvelope.getMembersawgoods_gotpoint());
+//					gift_money.setText(String.valueOf(envelope));//用户余额
+//					gift_num.setText(list.size()+"");//用户资产
+//					BaseApp.getModel().setMoney(String.valueOf(envelope));//红包金额
+//					BaseApp.getModel().setNumber(list.size()+"");//红包个数
+//				}
+//			}
+//			@Override
+//			public void onRecevieFailed(String status, JSONObject json) {
+//				Tools.toast(UserActivity.this, "请求失败");
+//				super.onRecevieFailed(status, json);
+//			}
+//		});
+//	}
 	
 	
 	@Override
@@ -180,7 +197,7 @@ public class UserActivity extends BaseActivity {
 			startActivity(new Intent(UserActivity.this, UserStoreActivity.class));
 			break;
 		case R.id.user_setting:
-			/*点击设置*/
+			/*关于闲刷*/
 			startActivity(new Intent(UserActivity.this, UserSettingActivity.class));
 			break;
 		case R.id.user_info:

@@ -7,9 +7,14 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
+import com.alibaba.fastjson.JSONObject;
 import com.zykj.xishuashua.R;
 import com.zykj.xishuashua.fragment.AdvertFragment;
+import com.zykj.xishuashua.http.HttpErrorHandler;
+import com.zykj.xishuashua.http.HttpUtils;
+import com.zykj.xishuashua.http.UrlContants;
 import com.zykj.xishuashua.utils.CommonUtils;
+import com.zykj.xishuashua.utils.Tools;
 import com.zykj.xishuashua.view.MyCommonTitle;
 
 /**
@@ -65,13 +70,33 @@ public class GiftActivity extends FragmentActivity{
 		forthwithFragment = AdvertFragment.newInstance("1");//即时通知
 		perpetualFragment = AdvertFragment.newInstance("0");//永久通知
 
-        getSupportFragmentManager().beginTransaction().add(R.id.advert_contain,forthwithFragment).
-            add(R.id.advert_contain,perpetualFragment).show(forthwithFragment).hide(perpetualFragment).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.advert_contain,forthwithFragment,"left").
+            add(R.id.advert_contain,perpetualFragment,"right").show(forthwithFragment).hide(perpetualFragment).commit();
 	}
 
 	//退出操作
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		CommonUtils.exitkey(keyCode, this);
 		return super.onKeyDown(keyCode, event);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+    	if(!CommonUtils.CheckLogin()){
+    		Tools.toast(this, "请先登录");
+    		return;
+    	}
+		HttpUtils.getnoticecount(new HttpErrorHandler() {
+			@Override
+			public void onRecevieSuccess(JSONObject json) {
+				MainActivity.setNoticeNum(json.getIntValue(UrlContants.jsonData));
+			}
+		});
+		if(getSupportFragmentManager().findFragmentByTag("left").isHidden()){
+			perpetualFragment.requestData();
+		}else{
+			forthwithFragment.requestData();
+		}
 	}
 }

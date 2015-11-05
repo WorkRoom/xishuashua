@@ -19,6 +19,7 @@
 	    android:layout_marginTop="@dimen/ten"
 	   	style="@style/ui_backgrounlayoutstyle" >
 	    <LinearLayout 
+	   		android:visibility="gone"
 	        android:id="@+id/company_info"
 	    	android:background="@color/white"
 	        android:layout_width="fill_parent"
@@ -41,6 +42,7 @@
                 android:src="@drawable/my_right"/>
 	    </LinearLayout>
 	    <View 
+	    	android:visibility="gone"
 	        android:layout_width="fill_parent"
 	        android:layout_height="@dimen/one"
 	        android:background="@color/lgrey"/>
@@ -67,10 +69,12 @@
                 android:src="@drawable/my_right"/>
 	    </LinearLayout>
 	    <View 
+	     	android:visibility="gone"
 	        android:layout_width="fill_parent"
 	        android:layout_height="@dimen/one"
 	        android:background="@color/lgrey"/>
 	    <LinearLayout 
+	      	android:visibility="gone"
 	        android:id="@+id/apply_league"
 	    	android:background="@color/white"
 	        android:layout_width="fill_parent"

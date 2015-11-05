@@ -16,7 +16,7 @@ import com.loopj.android.http.RequestParams;
 import com.zykj.xishuashua.BaseActivity;
 import com.zykj.xishuashua.R;
 import com.zykj.xishuashua.adapter.CommonAdapter;
-import com.zykj.xishuashua.adapter.GiftAdapter;
+import com.zykj.xishuashua.adapter.HomeGiftAdapter;
 import com.zykj.xishuashua.adapter.ViewHolder;
 import com.zykj.xishuashua.http.EntityHandler;
 import com.zykj.xishuashua.http.HttpUtils;
@@ -45,10 +45,10 @@ public class GiftPerpetualActivity extends BaseActivity implements IXListViewLis
 	
 	private static final String NUM = "10";//每页显示条数
 	private int page = 1;//当前第几页
-	private String grade_id = "app";//2-个人红包  1-商家红包  app-app红包
+	private String grade_id = "app";//1-个人红包 2-商家红包  app-app红包
 	private String interesttag;//兴趣标签
 	private List<Gift> gifts = new ArrayList<Gift>();//红包数据
-	private GiftAdapter adapter;//设配器
+	private HomeGiftAdapter adapter;//设配器
 	private CommonAdapter<Interest> iAdapter;
 	private Handler mHandler;//异步加载或刷新
 	private String[] interestIds;//用户爱好标签
@@ -81,7 +81,7 @@ public class GiftPerpetualActivity extends BaseActivity implements IXListViewLis
 		gift_hlistview = (HorizontalListView)findViewById(R.id.gift_hlistview);//标签切换
 		gift_allnum = (TextView)findViewById(R.id.gift_allnum);//未抢红包总数
 		mListView = (XListView)findViewById(R.id.gift_listview);//选择标签
-        adapter = new GiftAdapter(this, R.layout.ui_item_gift, gifts);
+        adapter = new HomeGiftAdapter(this, R.layout.ui_item_gift, gifts);
         mListView.setAdapter(adapter);
 		mListView.setPullLoadEnable(true);
 		mListView.setXListViewListener(this);
@@ -125,7 +125,7 @@ public class GiftPerpetualActivity extends BaseActivity implements IXListViewLis
 	private void requestInterest() {
     	RequestParams params = new RequestParams();
     	params.put("marketprice", "0");//"1"即时红包, "0"永久红包
-    	params.put("grade_id", grade_id);//2-个人红包  1-商家红包  app-app红包(默认)
+    	params.put("grade_id", "1".equals(grade_id)?"1":"2".equals(grade_id)?"2":"app");//1-个人红包  2-商家红包  app-app红包(默认)
 		HttpUtils.getAllInterests(getAllInterests, params);
 	}
 
@@ -139,7 +139,7 @@ public class GiftPerpetualActivity extends BaseActivity implements IXListViewLis
     	params.put("per_page", NUM);
     	params.put("marketprice", "0");//"1"即时红包, "0"永久红包
     	params.put("interestid", interesttag == null?"1":interesttag);//兴趣标签Id
-    	params.put("grade_id", grade_id);//2-个人红包  1-商家红包  app-app红包(默认)
+    	params.put("grade_id", grade_id);//1-个人红包  2-商家红包  app-app红包(默认)
 		MyRequestDailog.showDialog(this, "");
 		HttpUtils.getsomekindenvelist(rel_getEnveList, params);
 	}
@@ -185,7 +185,7 @@ public class GiftPerpetualActivity extends BaseActivity implements IXListViewLis
 		int all_num = 0;
 		for (int i = 0; i < list.size(); i++) {
 			Interest interest = list.get(i);
-			int a =  Integer.valueOf(interest.getCount());
+			int a =  Integer.valueOf(StringUtil.toString(interest.getCount(), "0"));
 			all_num = all_num + a;
 			for (String interest_id : interestIds) {
 				if(interest_id.equals(list.get(i).getInterest_id())){
@@ -262,26 +262,35 @@ public class GiftPerpetualActivity extends BaseActivity implements IXListViewLis
 				if(position == 0){
 					page = 1;
 					gift_hlistview.setVisibility(View.GONE);
-					grade_id = "app";
+					grade_id = "app";//1-个人红包 2-商家红包  app-app红包
 					requestInterest();
 					requestData();
 					onLoad();
 				}else if(position == 1){
 					page = 1;
 					gift_hlistview.setVisibility(View.VISIBLE);
-					grade_id = "1";
+					grade_id = "2";//1-个人红包 2-商家红包  app-app红包
+					interesttag = "1";
 					requestInterest();
 					requestData();
 					onLoad();
 				}else{
 					page = 1;
 					gift_hlistview.setVisibility(View.VISIBLE);
-					grade_id = "2";
+					grade_id = "1";//1-个人红包 2-商家红包  app-app红包
+					interesttag = "1";
 					requestInterest();
 					requestData();
 					onLoad();
 				}
 			}
 		}, 100);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		page = 1;
+		requestData();
 	}
 }

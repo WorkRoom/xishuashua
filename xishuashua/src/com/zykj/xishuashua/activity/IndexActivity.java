@@ -42,6 +42,7 @@ import com.zykj.xishuashua.http.UrlContants;
 import com.zykj.xishuashua.model.Gift;
 import com.zykj.xishuashua.utils.CommonUtils;
 import com.zykj.xishuashua.utils.DateUtil;
+import com.zykj.xishuashua.utils.StringUtil;
 import com.zykj.xishuashua.utils.Tools;
 import com.zykj.xishuashua.view.AutoListView;
 import com.zykj.xishuashua.view.MyCommonTitle;
@@ -67,6 +68,8 @@ public class IndexActivity extends BaseActivity implements OnItemClickListener{
 	private ImageView index_image1,index_image2,index_image3;
 	private List<Gift> news = new ArrayList<Gift>();
 	private List<Gift> specialList;
+	private String interestIds = "";
+	private BadgeView badgeView1,badgeView2;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +109,12 @@ public class IndexActivity extends BaseActivity implements OnItemClickListener{
 		LayoutParams imagelayout = index_gift.getLayoutParams();
 		imagelayout.width = Tools.M_SCREEN_WIDTH;
 		imagelayout.height = Tools.M_SCREEN_WIDTH * 11 / 30;
+		badgeView1 = new BadgeView(IndexActivity.this, index_image1);
+		badgeView1.setText("0");
+		//badgeView1.hide();
+		badgeView2 = new BadgeView(IndexActivity.this, index_image2);
+		badgeView2.setText("0");
+        //badgeView2.hide();
 		
 		viewPager.setInterval(2000);
 		viewPager.startAutoScroll();
@@ -220,27 +229,24 @@ public class IndexActivity extends BaseActivity implements OnItemClickListener{
 		switch(view.getId()){
 		case R.id.aci_shared_btn:
 			/*App分享*/
+			CommonUtils.storeImageToSDCARD(this);
 			CommonUtils.showShare(this, getString(R.string.app_name), "喜刷刷是一款可以边看新闻边抢红包的App", 
-					"http://dashboard.mob.com/Uploads/1b692f6c9fceaf93c407afd889c36090.png", "");
+					"http://dashboard.mob.com/Uploads/3d6cec44fbd284d5f1c0c59bb7a4a5f6.png", "http://www.pgyer.com/xishuashua");
 			break;
 		case R.id.index_image1:
 			/*即时红包*/
-//			GiftActivity.ADVERTTYPE = "1";
-//			MainActivity.switchTabActivity(1);
 			if(!CommonUtils.CheckLogin()){ Tools.toast(this, "请先登录"); return; }
-			getmemberinterests(R.id.index_image1);
+			getmemberinterests(0);
 			break;
 		case R.id.index_image2:
 			/*永久红包*/
-//			GiftActivity.ADVERTTYPE = "2";
-//			MainActivity.switchTabActivity(1);
 			if(!CommonUtils.CheckLogin()){ Tools.toast(this, "请先登录"); return; }
-			getmemberinterests(R.id.index_image2);
+			getmemberinterests(1);
 			break;
 		case R.id.index_image3:
 			/*兴趣标签*/
 			if(!CommonUtils.CheckLogin()){ Tools.toast(this, "请先登录"); return; }
-			getmemberinterests(R.id.index_image3);
+			getmemberinterests(2);
 			break;
 		case R.id.tv_index_gift:
 			/*更多新闻*/
@@ -253,22 +259,22 @@ public class IndexActivity extends BaseActivity implements OnItemClickListener{
 	 * @param viewId
 	 * 获取用户选择的兴趣标签
 	 */
-	private void getmemberinterests(final int viewId){
+	private void getmemberinterests(final int type){
 		HttpUtils.getmemberinterests(new HttpErrorHandler() {
 			@Override
 			public void onRecevieSuccess(JSONObject json) {
 				JSONArray jsonArray = json.getJSONArray("list");
-				String interestIds = "";
+				interestIds = "";
 				for (int i = 0; i < jsonArray.size(); i++) {
 					interestIds += jsonArray.getJSONObject(i).getString("interest_id")+",";
 				}
 				interestIds = interestIds.length()>0?interestIds.substring(0,interestIds.length()-1):"";
-				if(viewId == R.id.index_image3){
-					startActivity(new Intent(IndexActivity.this, UserLableActivity.class).putExtra("interestIds", interestIds));//兴趣标签
-				}else if(viewId == R.id.index_image2){
+				if(type == 0){
+					startActivity(new Intent(IndexActivity.this, GiftForthwithActivity.class).putExtra("interestIds", interestIds));//即时红包
+				}else if(type == 1){
 					startActivity(new Intent(IndexActivity.this, GiftPerpetualActivity.class).putExtra("interestIds", interestIds));//永久红包
 				}else{
-					startActivity(new Intent(IndexActivity.this, GiftForthwithActivity.class).putExtra("interestIds", interestIds));//即时红包
+					startActivity(new Intent(IndexActivity.this, UserLableActivity.class).putExtra("interestIds", interestIds));//兴趣标签
 				}
 			}
 		});
@@ -283,6 +289,25 @@ public class IndexActivity extends BaseActivity implements OnItemClickListener{
 		if(container != null){
 			container.smoothScrollTo(0, 0);
 		}
+		HttpUtils.getpertemcount(new HttpErrorHandler() {
+			@Override
+			public void onRecevieSuccess(JSONObject json) {
+				String jishi = json.getJSONObject(UrlContants.jsonData).getString("jishi");
+				String yongjiu = json.getJSONObject(UrlContants.jsonData).getString("yongjiu");
+				if(CommonUtils.CheckLogin() && Integer.valueOf(StringUtil.toString(jishi, "0"))>0){
+					badgeView1.show();
+					badgeView1.setText(jishi);
+				}else{
+					badgeView1.hide();
+				}
+				if(CommonUtils.CheckLogin() && Integer.valueOf(StringUtil.toString(yongjiu, "0"))>0){
+					badgeView2.show();
+					badgeView2.setText(yongjiu);
+				}else{
+					badgeView2.hide();
+				}
+			}
+		});
 	}
 
 	@Override

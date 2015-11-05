@@ -8,7 +8,7 @@
     
     <ImageView 
         android:id="@+id/new_img"
-        android:layout_width="@dimen/one_hundred"
+        android:layout_width="@dimen/eighty_five"
         android:layout_height="@dimen/eighty"
         android:src="@drawable/icon_image_default"
         android:scaleType="fitXY"
@@ -32,19 +32,80 @@
 	        android:id="@+id/new_content"
             android:text="@string/index_news_content"
             android:textColor="@color/text_light"
-            android:maxLines="2"
+            android:singleLine="true"
             android:textSize="@dimen/t_sixteen"
             android:paddingTop="@dimen/five"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
-        <TextView 
-	        android:id="@+id/new_createtime"
-            android:text="@string/index_news_createtime"
-            android:textColor="@color/text_light"
-            android:textSize="@dimen/t_twelve"
-            android:gravity="right"
+        <LinearLayout 
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+	        <LinearLayout 
+	            android:id="@+id/custom_num"
+	            android:visibility="gone"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="bottom"
+	            android:orientation="horizontal">
+		        <ImageView 
+		            android:layout_width="@dimen/twelve"
+	            	android:layout_height="@dimen/twelve"
+	            	android:layout_gravity="center_vertical"
+	            	android:contentDescription="@string/app_name"
+	            	android:src="@drawable/comment_normal"/>
+	            <TextView
+	                android:id="@+id/comment_num1"
+		            android:gravity="top"
+		            android:textSize="@dimen/t_twelve"
+		            android:textColor="@color/text_light"
+		            android:layout_width="wrap_content"
+	            	android:layout_height="wrap_content"
+		            android:layout_marginRight="@dimen/ten"
+	                android:text="@string/message_number"/>
+		        <ImageView 
+		            android:layout_width="@dimen/twelve"
+	            	android:layout_height="@dimen/twelve"
+	            	android:layout_gravity="center_vertical"
+	            	android:contentDescription="@string/app_name"
+	            	android:src="@drawable/share_normal"/>
+	            <TextView 
+	                android:id="@+id/comment_num2"
+		            android:gravity="top"
+		            android:textSize="@dimen/t_twelve"
+		            android:textColor="@color/text_light"
+		            android:layout_width="wrap_content"
+	            	android:layout_height="wrap_content"
+		            android:layout_marginRight="@dimen/ten"
+	                android:text="@string/message_number"/>
+		        <ImageView 
+		            android:layout_width="@dimen/twelve"
+	            	android:layout_height="@dimen/twelve"
+	            	android:layout_gravity="center_vertical"
+	            	android:contentDescription="@string/app_name"
+	            	android:src="@drawable/star_normal"/>
+	            <TextView 
+	                android:id="@+id/comment_num3"
+		            android:gravity="top"
+		            android:textSize="@dimen/t_twelve"
+		            android:textColor="@color/text_light"
+		            android:layout_width="wrap_content"
+	            	android:layout_height="wrap_content"
+	                android:text="@string/message_number"/>
+        	</LinearLayout>
+	        <View 
+	            android:layout_width="0.0dip"
+            	android:layout_height="@dimen/one"
+            	android:layout_weight="1"/>
+	        <TextView 
+		        android:id="@+id/new_createtime"
+	            android:text="@string/comment_time"
+            	android:textColor="@color/grey"
+            	android:gravity="bottom"
+		   		android:textSize="@dimen/t_twelve"
+	            android:layout_width="wrap_content"
+            	android:layout_height="@dimen/eighteen"/>
+        </LinearLayout>
     </LinearLayout>
-    
 </LinearLayout>

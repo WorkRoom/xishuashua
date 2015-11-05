@@ -67,6 +67,10 @@ public class IndexNewsActivity extends BaseActivity implements IXListViewListene
 				try {
 					String date = DateUtil.longToString(Long.valueOf(newinfo.getGoods_selltime()+"000"), "yyyy-MM-dd");
 					holder.setImageUrl(R.id.new_img, UrlContants.GIFTIMGURL+imgurl+File.separator+newinfo.getGoods_image(), 10f)
+					.setVisibility(R.id.custom_num, true)
+					.setText(R.id.comment_num1, newinfo.getGoods_commentnum())
+					.setText(R.id.comment_num2, newinfo.getGoods_sharenum())
+					.setText(R.id.comment_num3, newinfo.getGoods_collectnum())
 					.setText(R.id.new_title, newinfo.getGoods_name()).setText(R.id.new_createtime, date+"发布")
 					.setText(R.id.new_content, newinfo.getGoods_jingle().length()>50?newinfo.getGoods_jingle().substring(0,50):newinfo.getGoods_jingle());
 				} catch (Exception e) {

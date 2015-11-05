@@ -37,49 +37,55 @@
             android:layout_height="@dimen/thirty"
             android:layout_gravity="center_vertical"
             android:background="@color/grey"/>
-        <ImageView 
-            android:id="@+id/bottom_comment_show"
+        <LinearLayout 
             android:layout_width="0.0dip"
             android:src="@drawable/comment_normal"
             android:layout_height="match_parent"
-            android:layout_weight="15"
-            android:padding="@dimen/fifteen"
-            android:contentDescription="@string/app_name"/>
-        <ImageView 
-            android:id="@+id/bottom_store"
-            android:layout_width="0.0dip"
-            android:src="@drawable/star_normal"
-            android:layout_height="match_parent"
-            android:layout_weight="15"
-            android:padding="@dimen/fifteen"
-            android:contentDescription="@string/app_name"/>
-        <ImageView 
-            android:id="@+id/bottom_mobile"
-            android:layout_width="0.0dip"
-            android:src="@drawable/phone_normal"
-            android:layout_height="match_parent"
-            android:layout_weight="15"
-            android:padding="@dimen/fifteen"
-            android:contentDescription="@string/app_name"/>
-        <ImageView 
-            android:id="@+id/bottom_address"
-            android:layout_width="0.0dip"
-            android:src="@drawable/address"
-            android:layout_height="match_parent"
-            android:layout_weight="15"
-            android:padding="@dimen/fifteen"
-            android:contentDescription="@string/app_name"/>
+            android:layout_weight="60">
+	        <ImageView 
+	            android:id="@+id/bottom_comment_show"
+	            android:layout_width="0.0dip"
+	            android:src="@drawable/comment_normal"
+	            android:layout_height="match_parent"
+	            android:layout_weight="1"
+	            android:padding="@dimen/fifteen"
+	            android:contentDescription="@string/app_name"/>
+	        <ImageView 
+	            android:id="@+id/bottom_store"
+	            android:layout_width="0.0dip"
+	            android:src="@drawable/star_normal"
+	            android:layout_height="match_parent"
+	            android:layout_weight="1"
+	            android:padding="@dimen/fifteen"
+	            android:contentDescription="@string/app_name"/>
+	        <ImageView 
+	            android:id="@+id/bottom_mobile"
+	            android:layout_width="0.0dip"
+	            android:src="@drawable/phone_normal"
+	            android:layout_height="match_parent"
+	            android:layout_weight="1"
+	            android:padding="@dimen/fifteen"
+	            android:contentDescription="@string/app_name"/>
+	        <ImageView 
+	            android:id="@+id/bottom_address"
+	            android:layout_width="0.0dip"
+	            android:src="@drawable/address"
+	            android:layout_height="match_parent"
+	            android:layout_weight="1"
+	            android:padding="@dimen/fifteen"
+	            android:contentDescription="@string/app_name"/>
+        </LinearLayout>
     </LinearLayout>
     <TextView 
         android:id="@+id/gift_message"
         android:text="@string/message"
-        android:textSize="@dimen/t_eight"
+        android:textSize="@dimen/t_twelve"
         android:textColor="@color/btn_red"
         android:gravity="center"
         android:layout_below="@id/aci_mytitle"
     	android:background="@color/content_background_color"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/fifteen"/>
+        android:layout_height="@dimen/eighteen"/>
     
 	<com.zykj.xishuashua.view.XListView
 	    android:id="@+id/msg_listview"

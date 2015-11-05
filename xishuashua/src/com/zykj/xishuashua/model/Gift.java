@@ -32,6 +32,7 @@ public class Gift implements Serializable{
 	private String grade_id;//0个人、商家、app
 	private String goods_serial;//兴趣标签
 	private String saw;
+	private String collect_lastsawtime;
 	
 	private boolean isChecked;//是否选中
 	
@@ -172,5 +173,11 @@ public class Gift implements Serializable{
 	}
 	public void setChecked(boolean isChecked) {
 		this.isChecked = isChecked;
+	}
+	public String getCollect_lastsawtime() {
+		return collect_lastsawtime;
+	}
+	public void setCollect_lastsawtime(String collect_lastsawtime) {
+		this.collect_lastsawtime = collect_lastsawtime;
 	}
 }

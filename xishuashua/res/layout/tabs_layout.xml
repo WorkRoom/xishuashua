@@ -58,5 +58,12 @@
             android:layout_height="fill_parent"
             android:layout_above="@+id/tab_rgroup" >
         </FrameLayout>
+        <TextView 
+            android:id="@+id/notice_num"
+            android:layout_width="@dimen/seventy"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/forty"/>
     </RelativeLayout>
 </TabHost>

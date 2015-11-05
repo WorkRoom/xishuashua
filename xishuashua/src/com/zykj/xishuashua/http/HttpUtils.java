@@ -29,6 +29,12 @@ public class HttpUtils {
         client.post(UrlContants.getUrl(UrlContants.LOGIN), params, handler);
     }
     
+    /*用户信息*/
+    public static void getMemberInfo(AsyncHttpResponseHandler handler, RequestParams params){
+        client.post(UrlContants.getUrl(UrlContants.MEMBERINFO), params, handler);
+    }
+    
+    
     /*用户注册*/
     public static void register(AsyncHttpResponseHandler handler, RequestParams params){
         client.post(UrlContants.getUrl(UrlContants.REGISTER), params, handler);
@@ -157,5 +163,45 @@ public class HttpUtils {
     /*删除收藏订单*/
     public static void deletecollect(AsyncHttpResponseHandler handler, RequestParams params){
     	client.post(UrlContants.getUrl(UrlContants.DELETECOLLECT), params, handler);
+    }
+    
+    /*第三方登录*/
+    public static void thirdpartlogin(AsyncHttpResponseHandler handler, RequestParams params){
+    	client.post(UrlContants.getUrl(UrlContants.THIRDPARTLOGIN), params, handler);
+    }
+    
+    /*获取首页即时、永久未读红包*/
+    public static void getpertemcount(AsyncHttpResponseHandler handler){
+    	client.post(UrlContants.getUrl(UrlContants.PERTEMCOUNT), handler);
+    }
+    
+    /*红包通知为读数*/
+    public static void getnoticecount(AsyncHttpResponseHandler handler){
+    	client.post(UrlContants.getUrl(UrlContants.NOTICECOUNT), handler);
+    }
+    
+    /*提现*/
+    public static void paCashAdd(AsyncHttpResponseHandler handler, RequestParams params){
+    	client.post(UrlContants.getUrl(UrlContants.PDCASHADD), params, handler);
+    }
+    
+    /*获取用户余额以及红包个数*/
+    public static void available_predeposit(AsyncHttpResponseHandler handler){
+    	client.post(UrlContants.getUrl(UrlContants.AVAILABLEPREDEPOSIT), handler);
+    }
+   
+    /*手机充值*/
+    public static void phonerecharge(AsyncHttpResponseHandler handler, RequestParams params){
+    	client.post(UrlContants.getUrl(UrlContants.PHONERECHARGE), params, handler);
+    }
+   
+    /*获取推送状态*/
+    public static void getpushstate(AsyncHttpResponseHandler handler){
+    	client.post(UrlContants.getUrl(UrlContants.SWITCHSTATE), handler);
+    }
+   
+    /*设置推送开关*/
+    public static void setpushstate(AsyncHttpResponseHandler handler){
+    	client.post(UrlContants.getUrl(UrlContants.SETPUSHSWITCH), handler);
     }
 }

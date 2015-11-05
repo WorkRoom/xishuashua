@@ -1,10 +1,12 @@
-package com.zykj.xishuashua.activity;
+package com.zykj.xishuashua;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baidu.android.pushservice.PushConstants;
@@ -15,11 +17,11 @@ import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.SDKInitializer;
 import com.loopj.android.http.RequestParams;
-import com.zykj.xishuashua.BaseActivity;
-import com.zykj.xishuashua.BaseApp;
-import com.zykj.xishuashua.R;
+import com.zykj.xishuashua.activity.IntroActivity;
+import com.zykj.xishuashua.activity.MainActivity;
 import com.zykj.xishuashua.http.HttpErrorHandler;
 import com.zykj.xishuashua.http.HttpUtils;
+import com.zykj.xishuashua.utils.AppShortCutUtil;
 import com.zykj.xishuashua.utils.StringUtil;
 import com.zykj.xishuashua.utils.Tools;
 
@@ -27,6 +29,7 @@ public class Welcome extends BaseActivity {
 	
 	private LocationClient mLocationClient;
 	private MyLocationListener mLocationListener;
+	private static Context context;
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -34,8 +37,9 @@ public class Welcome extends BaseActivity {
         //注意该方法要再setContentView方法之前实现  
         SDKInitializer.initialize(getApplicationContext());
 		initView(R.layout.ui_welcome);
+		context = this;
 		
-		PushManager.startWork(getApplicationContext(),PushConstants.LOGIN_TYPE_API_KEY,"ybkkYz0vHYgGdfcpPnvcTSL0");
+		PushManager.startWork(getApplicationContext(),PushConstants.LOGIN_TYPE_API_KEY,"BA4pFu68DGRMAyQ0NSgFf7S9");
 		initLocation();
 		
 		Timer timer = new Timer();
@@ -134,7 +138,13 @@ public class Welcome extends BaseActivity {
 		public void onReceiveLocation(BDLocation location) {
 			BaseApp.getModel().setLatitude(String.valueOf(location.getLatitude()));
 			BaseApp.getModel().setLongitude(String.valueOf(location.getLongitude()));
+			//Tools.toast(Welcome.this, "lat="+location.getLatitude()+"long="+location.getLongitude());
+			Log.e("-----------------------", "lat="+location.getLatitude()+"long="+location.getLongitude());
 			checkLogin();
 		}
+	}
+	
+	public static void setNoticeNum(String num){
+		AppShortCutUtil.addNumShortCut(context, Welcome.class, true, num, true);
 	}
 }

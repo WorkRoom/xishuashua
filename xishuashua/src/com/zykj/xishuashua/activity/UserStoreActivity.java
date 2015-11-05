@@ -2,6 +2,7 @@ package com.zykj.xishuashua.activity;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -13,11 +14,12 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import com.alibaba.fastjson.JSONObject;
 import com.loopj.android.http.RequestParams;
 import com.zykj.xishuashua.BaseActivity;
 import com.zykj.xishuashua.R;
-import com.zykj.xishuashua.adapter.GiftAdapter;
+import com.zykj.xishuashua.adapter.StoreGiftAdapter;
 import com.zykj.xishuashua.http.EntityHandler;
 import com.zykj.xishuashua.http.HttpErrorHandler;
 import com.zykj.xishuashua.http.HttpUtils;
@@ -39,7 +41,7 @@ public class UserStoreActivity extends BaseActivity implements IXListViewListene
 	private RelativeLayout bottom_bar;
 	private TextView btn_delete;
     private XListView myListView;
-	private GiftAdapter adapter;
+	private StoreGiftAdapter adapter;
 	private List<Gift> gifts = new ArrayList<Gift>();
 	
 	@Override
@@ -64,7 +66,7 @@ public class UserStoreActivity extends BaseActivity implements IXListViewListene
 		setListener(btn_delete);
 		
 		myListView = (XListView)findViewById(R.id.advert_listview);
-		adapter = new GiftAdapter(UserStoreActivity.this, R.layout.ui_item_gift, gifts);
+		adapter = new StoreGiftAdapter(UserStoreActivity.this, R.layout.ui_item_gift, gifts);
 		myListView.setAdapter(adapter);
 		myListView.setDividerHeight(0);
 		myListView.setPullLoadEnable(true);

@@ -1,12 +1,15 @@
 package com.zykj.xishuashua.utils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.view.KeyEvent;
 import android.view.View;
@@ -25,9 +28,9 @@ public class CommonUtils {
 
 	private static final double EARTH_RADIUS = 6378137;//地球半径
 	/**
-	* 动态设置ListView的高度
-	* @param listView
-	*/
+	 * 动态设置ListView的高度
+	 * @param listView
+	 */
 	public static void setListViewHeightBasedOnChildren(ListView listView) { 
 	    if(listView == null) return;
 
@@ -71,7 +74,7 @@ public class CommonUtils {
 	   Math.cos(radLat1)*Math.cos(radLat2)*Math.pow(Math.sin(b/2),2)));
 	   s = s * EARTH_RADIUS;
 	   s = Math.round(s * 10000) / 10000;
-	   return s;
+	   return s/1000;
 	}
 	
 	public static boolean CheckLogin(){
@@ -89,12 +92,10 @@ public class CommonUtils {
 			public void onError(Platform arg0, int arg1, Throwable arg2) {
 				Tools.toast(context, "分享失败");
 			}
-			
 			@Override
 			public void onComplete(Platform arg0, int arg1, HashMap<String, Object> arg2) {
 				Tools.toast(context, "分享成功");
 			}
-			
 			@Override
 			public void onCancel(Platform arg0, int arg1) {
 				Tools.toast(context, "取消分享");
@@ -103,22 +104,48 @@ public class CommonUtils {
 		// title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间使用
 		oks.setTitle(title);//喜刷刷
 		// titleUrl是标题的网络链接，仅在人人网和QQ空间使用
-		oks.setTitleUrl("http://fir.im");
+		oks.setTitleUrl("http://www.bangm.net");
 		// text是分享文本，所有平台都需要这个字段
 		oks.setText(content);//"我从发布者名称那里获得商家红包7.00元"
 		// imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
 		//oks.setImagePath("/sdcard/test.jpg");//确保SDcard下面存在此张图片
-		oks.setImageUrl(ImageUrl);//http://dashboard.mob.com/Uploads/1b692f6c9fceaf93c407afd889c36090.png
+		//oks.setImageUrl(ImageUrl);//http://dashboard.mob.com/Uploads/1b692f6c9fceaf93c407afd889c36090.png
+		String path = Environment.getExternalStorageDirectory().getAbsolutePath();//图片路径
+		oks.setImagePath(path + "/xishuashua.png");//确保SDcard下面存在此张图片
 		// url仅在微信（包括好友和朋友圈）中使用
-		oks.setUrl(downloadUrl);//http://fir.im
+		oks.setUrl("http://www.bangm.net");//http://fir.im
 		// comment是我对这条分享的评论，仅在人人网和QQ空间使用
-		oks.setComment("我是测试评论文本");
+		oks.setComment("闲刷");
 		// site是分享此内容的网站名称，仅在QQ空间使用
 		oks.setSite(context.getString(R.string.app_name));
 		// siteUrl是分享此内容的网站地址，仅在QQ空间使用
-		//oks.setSiteUrl("http://fir.im");
+		oks.setSiteUrl("http://www.bangm.net");
 		// 启动分享GUI
 		oks.show(context);
+	}
+
+	public static void storeImageToSDCARD(Context context) {
+		//SD卡路径
+		String path = Environment.getExternalStorageDirectory().getAbsolutePath();//图片路径
+		//将文件从资源文件放到合适地方（资源文件也就是放在项目的res下的raw目录中的图片）
+		//将文件复制到SD卡中  
+		File dir = new File(path);
+		if (!dir.exists()) {
+			dir.mkdir();
+		}
+		File imagefile = new File(dir, "xishuashua.png");
+		if (!imagefile.exists()) {
+			try {
+				imagefile.createNewFile();
+				FileOutputStream fos = new FileOutputStream(imagefile);
+				Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), R.raw.app_logo);
+				bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
+				fos.flush();
+				fos.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	//抢红包退出

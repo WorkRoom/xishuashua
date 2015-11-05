@@ -62,5 +62,4 @@ public class BaseTabActivity extends TabActivity {
 
 		return super.onKeyDown(keyCode, event);
 	}
-
 }

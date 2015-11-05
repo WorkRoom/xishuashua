@@ -9,6 +9,7 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+
 import com.zykj.xishuashua.BaseActivity;
 import com.zykj.xishuashua.R;
 import com.zykj.xishuashua.utils.Tools;

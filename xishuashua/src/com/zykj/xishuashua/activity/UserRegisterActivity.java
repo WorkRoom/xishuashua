@@ -4,6 +4,7 @@ import static cn.smssdk.framework.utils.R.getStringRes;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -23,6 +24,7 @@ public class UserRegisterActivity extends BaseActivity{
 	
 	private MyCommonTitle myCommonTitle;
 	private EditText uu_username,phone_code;
+	private Button identifying_code,app_register_in;
 	private String username;
 	private String type;
 
@@ -59,8 +61,8 @@ public class UserRegisterActivity extends BaseActivity{
 		
 		uu_username = (EditText)findViewById(R.id.uu_username);//手机号
 		phone_code = (EditText)findViewById(R.id.phone_code);//手机号
-		Button identifying_code = (Button)findViewById(R.id.identifying_code);//发送验证码
-		Button app_register_in = (Button)findViewById(R.id.app_register_in);//注册
+		identifying_code = (Button)findViewById(R.id.identifying_code);//发送验证码
+		app_register_in = (Button)findViewById(R.id.app_register_in);//注册
 		app_register_in.setText("forget".equals(type)?"找回密码":"注册");
 		
 		setListener(identifying_code, app_register_in);
@@ -76,6 +78,8 @@ public class UserRegisterActivity extends BaseActivity{
 	        	return;
 	        }
 			/*发送手机验证码*/
+	        identifying_code.setOnClickListener(null);
+	        new MyCount(60000, 1000).start();//一分钟倒计时
 			SMSSDK.getVerificationCode("86",username);
 			break;
 		case R.id.app_register_in:
@@ -125,4 +129,22 @@ public class UserRegisterActivity extends BaseActivity{
 			}
 		}
 	};
+	
+	/* 定义一个倒计时的内部类 */
+    class MyCount extends CountDownTimer {
+        public MyCount(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+        }
+ 
+        @Override
+        public void onFinish() {
+        	identifying_code.setText("点击获取验证码");
+        	identifying_code.setOnClickListener(UserRegisterActivity.this);
+        }
+ 
+        @Override
+        public void onTick(long millisUntilFinished) {
+        	identifying_code.setText(millisUntilFinished / 1000 + "秒");
+        }
+    }
 }

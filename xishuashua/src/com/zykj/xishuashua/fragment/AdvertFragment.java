@@ -82,6 +82,11 @@ public class AdvertFragment extends Fragment implements IXListViewListener,OnIte
      * 请求红包列表
      */
     public void requestData() {
+    	if(!CommonUtils.CheckLogin()){
+    		gifts.clear();
+			adapter.notifyDataSetChanged();
+			return;
+    	}
     	RequestParams params = new RequestParams();
     	params.put("marketprice", isperpetual);//1即时红包  0永久红包
     	params.put("page", String.valueOf(page));
@@ -126,6 +131,14 @@ public class AdvertFragment extends Fragment implements IXListViewListener,OnIte
 				onLoad();
 			}
 		}, 1000);
+	}
+	
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		page = 1;
+		requestData();
 	}
 
 	@Override

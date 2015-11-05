@@ -3,6 +3,7 @@ package com.zykj.xishuashua.activity;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -13,6 +14,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.Html;
 import android.text.Html.ImageGetter;
+import android.text.method.LinkMovementMethod;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import com.alibaba.fastjson.JSONObject;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -91,7 +94,8 @@ public class GiftDetailActivity extends BaseActivity implements
 	private void initView() {
 		myCommonTitle = (MyCommonTitle) findViewById(R.id.aci_mytitle);
 		myCommonTitle.setTitle("红包详情");
-		myCommonTitle.setLisener(this, this);
+		myCommonTitle.setLisener(this);
+		myCommonTitle.setLisener(null, this);
 
 		commonAdapter = new CommonAdapter<Comment>(this, R.layout.ui_item_comment, comments) {
 			@Override
@@ -153,7 +157,10 @@ public class GiftDetailActivity extends BaseActivity implements
 					try {
 						url = new URL(source);
 						drawable = Drawable.createFromStream(url.openStream(), null);
-						drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+						int screenWidth = Tools.M_SCREEN_WIDTH-Tools.dp2px(GiftDetailActivity.this, 20);
+						int intrinsicWidth = drawable.getIntrinsicWidth();
+						int ingrinsicHeight = drawable.getIntrinsicHeight();
+						drawable.setBounds(0, 0, screenWidth, screenWidth*ingrinsicHeight/intrinsicWidth);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -174,6 +181,7 @@ public class GiftDetailActivity extends BaseActivity implements
 		public void handleMessage(Message msg) {
 			if (msg.what == 0x101) {
 				msg_content.setText((CharSequence) msg.obj);
+				msg_content.setMovementMethod(LinkMovementMethod.getInstance());//超链接
 				MyRequestDailog.closeDialog();
 			}
 			super.handleMessage(msg);
@@ -256,21 +264,18 @@ public class GiftDetailActivity extends BaseActivity implements
 		}
 	};
 
+
 	@Override
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case R.id.aci_back_btn:
-			long continueTime = Long.parseLong(StringUtil.toString(
-					good.getString("goods_marketprice"), "0"));
-			long startTime = Long.parseLong(StringUtil.toString(
-					good.getString("goods_selltime"), "0"));
-			long seconds = startTime + continueTime
-					- System.currentTimeMillis() / 1000;
+			long continueTime = Long.parseLong(StringUtil.toString(good.getString("goods_marketprice"), "0"));
+			long startTime = Long.parseLong(StringUtil.toString(good.getString("goods_selltime"), "0"));
+			long seconds = startTime + continueTime - System.currentTimeMillis() / 1000;
 			if ("1".equals(good.getString("has_rabbed"))) {
 				flag = true;
 			} else {
-				if (continueTime > 0
-						&& !"news".equals(good.getString("store_name"))) {
+				if (continueTime > 0 && !"news".equals(good.getString("store_name"))) {
 					if (seconds < 1) {
 						flag = true;
 					}
@@ -284,8 +289,8 @@ public class GiftDetailActivity extends BaseActivity implements
 			break;
 		case R.id.aci_shared_btn:
 			// 分享
-			CommonUtils.showShare(this,getString(R.string.app_name),"我从" + good.getString("goods_name")+"那里获得了"+
-					good.getString("goods_price") + "元的红包", "http://dashboard.mob.com/Uploads/1b692f6c9fceaf93c407afd889c36090.png",null);
+			CommonUtils.showShare(this,getString(R.string.app_name), 
+					"我从" + good.getString("goods_name") + "那里获得了" + good.getString("goods_price") + "元的红包", "", "");
 			break;
 		case R.id.layout_laud:
 			clickfavorite();// 点赞
@@ -300,10 +305,13 @@ public class GiftDetailActivity extends BaseActivity implements
 			clickCollect();// 收藏
 			break;
 		case R.id.bottom_mobile:
-			UIDialog.callTelephone(this, "联系电话：15006598533", this);// 打电话
+			UIDialog.callTelephone(this, "联系电话："+good.getString("member_phone"), this);// 打电话
 			break;
 		case R.id.bottom_address:
-			startActivity(new Intent(this, MapActivity.class).putExtra("lat", good.getString("goods_lati")).putExtra("long", good.getString("goods_longi")));
+			startActivity(new Intent(this, MapActivity.class)
+						.putExtra("lat", good.getString("goods_lati"))
+						.putExtra("long", good.getString("goods_longi"))
+						.putExtra("address", good.getString("goods_location")));
 			break;
 		case R.id.comment_cancel:
 			UIDialog.closeDialog();// 取消评论
@@ -313,8 +321,7 @@ public class GiftDetailActivity extends BaseActivity implements
 			break;
 		case R.id.dialog_modif_1:
 			// 传入服务， parse（）解析号码,打电话
-			startActivity(new Intent(Intent.ACTION_CALL,
-					Uri.parse("tel:15006598533")));
+			startActivity(new Intent(Intent.ACTION_CALL,Uri.parse("tel:"+good.getString("member_phone"))));
 			break;
 		case R.id.dialog_modif_2:
 			UIDialog.closeDialog();// 取消拨号
@@ -323,10 +330,11 @@ public class GiftDetailActivity extends BaseActivity implements
 			break;
 		}
 	}
+	
 
 	@Override
-	protected void onPause() {
-		super.onPause();
+	protected void onDestroy() {
+		super.onDestroy();
 		// gift_message.setText("红包获取失败!");
 		flag = true;
 		if (timer != null)

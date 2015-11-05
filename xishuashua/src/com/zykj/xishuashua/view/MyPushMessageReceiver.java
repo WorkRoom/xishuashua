@@ -5,8 +5,13 @@ import java.util.List;
 import android.content.Context;
 import android.util.Log;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baidu.android.pushservice.PushMessageReceiver;
 import com.zykj.xishuashua.BaseApp;
+import com.zykj.xishuashua.http.HttpErrorHandler;
+import com.zykj.xishuashua.http.HttpUtils;
+import com.zykj.xishuashua.utils.StringUtil;
+import com.zykj.xishuashua.utils.Tools;
 
 /*
  * Push消息处理receiver。请编写您需要的回调函数， 一般来说： onBind是必须的，用来处理startWork返回值；
@@ -63,6 +68,18 @@ public class MyPushMessageReceiver extends PushMessageReceiver {
                 + appid + " userId=" + userId + " channelId=" + channelId
                 + " requestId=" + requestId;
         BaseApp.getModel().setChannelid(channelId);
+        if(!StringUtil.isEmpty(BaseApp.getModel().getUserid())){
+    		HttpUtils.getchannelid(new HttpErrorHandler() {
+    			@Override
+    			public void onRecevieSuccess(JSONObject json) {
+    				MyRequestDailog.closeDialog();
+    			}
+    			@Override
+    			public void onRecevieFailed(String status, JSONObject json) {
+    				MyRequestDailog.closeDialog();
+    			}
+    		}, BaseApp.getModel().getChannelid());
+        }
         Log.d(TAG, responseString);
     }
 
@@ -101,6 +118,7 @@ public class MyPushMessageReceiver extends PushMessageReceiver {
             String description, String customContentString) {
         String notifyString = "通知点击 title=\"" + title + "\" description=\""
                 + description + "\" customContent=" + customContentString;
+        Tools.toast(context, title);
         Log.d(TAG, notifyString);
     }
 

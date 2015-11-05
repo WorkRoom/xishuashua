@@ -31,6 +31,10 @@ public class MyCommonTitle extends RelativeLayout {
 		});
 	}
 
+	public void setLisener(OnClickListener editListener) {
+		titleBack.setOnClickListener(editListener);
+	}
+
 	public void setLisener(OnClickListener editListener, OnClickListener sharedListener) {
 		if(editListener != null) {
 			titleEdit.setVisibility(View.VISIBLE);

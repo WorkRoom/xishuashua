@@ -42,7 +42,7 @@ public class UserSettingActivity extends BaseActivity{
 			startActivity(new Intent(UserSettingActivity.this, UserLeagueActivity.class).putExtra("type", 1));
 			break;
 		case R.id.app_introduction:
-			/*应用说明*/
+			/*帮助*/
 			startActivity(new Intent(UserSettingActivity.this, UserLeagueActivity.class).putExtra("type", 2));
 			break;
 		case R.id.apply_league:

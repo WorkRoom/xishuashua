@@ -6,7 +6,7 @@ package com.zykj.xishuashua.http;
  */
 public class UrlContants {
 
-    public static final String BASE_URL = "http://115.28.167.43/appif/api.php?";//192.168.1.162//115.28.167.43
+    public static final String BASE_URL = "http://115.28.167.43/appif/api.php?";//192.168.199.174//115.28.167.43
     
     public static final String ABATARURL = "http://115.28.167.43/data/upload/shop/avatar/";//头像
     
@@ -20,6 +20,8 @@ public class UrlContants {
 
     public static final String LOGIN = "m=user&a=login";//登录
 
+    public static final String MEMBERINFO = "m=user&a=getmember_info";//用户信息
+    
     public static final String REGISTER = "m=user&a=register";//注册
 
     public static final String FORGETPWD = "m=user&a=resetPassword";//忘记密码
@@ -71,6 +73,22 @@ public class UrlContants {
     public static final String COMMENTFAVORITE = "m=user&a=clickCommentFavorite";//评论点赞
     
     public static final String DELETECOLLECT = "m=user&a=deletecollect";//删除收藏订单
+    
+    public static final String THIRDPARTLOGIN = "m=user&a=thirdpartlogin";//第三方登录
+    
+    public static final String PERTEMCOUNT = "m=user&a=get_per_tem_count";//获取首页即时、永久未读红包
+    
+    public static final String NOTICECOUNT = "m=user&a=getnoticecount";//红包通知未读数
+    
+    public static final String PDCASHADD = "m=user&a=pd_cash_add";//提现
+    
+    public static final String AVAILABLEPREDEPOSIT = "m=user&a=pd_cash_add_record_available_predeposit";//获取用户余额以及红包个数
+    
+    public static final String PHONERECHARGE= "m=user&a=pd_cash_add_phonerecharge";//手机充值
+    
+    public static final String SWITCHSTATE= "m=user&a=push_switch_state";//获取推送状态
+    
+    public static final String SETPUSHSWITCH= "m=user&a=push_swith";//设置推送开关
     
     public static String getUrl(String token){
         if(token==null || token.equals("")){

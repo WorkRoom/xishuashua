@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.Html;
 import android.text.Html.ImageGetter;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -57,7 +58,7 @@ public class IndexNewDetailActivity extends BaseActivity implements IXListViewLi
 	private TextView gift_message,message_title,msg_content;
 	private CheckBox msg_dw_laud,msg_dw_star,msg_dw_comment,msg_dw_share,bottom_comment;
 	private boolean check_laud,check_star;
-	private ImageView bottom_comment_show,bottom_store,bottom_mobile;
+	private ImageView bottom_comment_show,bottom_store;
 	private RelativeLayout layout_laud;
 	private XListView msg_listview;
 	private CommonAdapter<Comment> commonAdapter;
@@ -125,9 +126,10 @@ public class IndexNewDetailActivity extends BaseActivity implements IXListViewLi
 		bottom_comment = (MyCheckBox)findViewById(R.id.bottom_comment);//添加评论
 		bottom_comment_show = (ImageView)findViewById(R.id.bottom_comment_show);//查看评论
 		bottom_store = (ImageView)findViewById(R.id.bottom_store);//收藏
-		bottom_mobile = (ImageView)findViewById(R.id.bottom_mobile);//拨号
+		findViewById(R.id.bottom_mobile).setVisibility(View.GONE);//拨号
+		findViewById(R.id.bottom_address).setVisibility(View.GONE);//地址
 		
-		setListener(layout_laud, bottom_comment, bottom_comment_show, bottom_store, bottom_mobile);
+		setListener(layout_laud, bottom_comment, bottom_comment_show, bottom_store);
 	}
 
 	// 因为从网上下载图片是耗时操作 所以要开启新线程
@@ -170,6 +172,7 @@ public class IndexNewDetailActivity extends BaseActivity implements IXListViewLi
 		public void handleMessage(Message msg) {
 			if (msg.what == 0x101) {
 				msg_content.setText((CharSequence) msg.obj);
+				msg_content.setMovementMethod(LinkMovementMethod.getInstance());
 				MyRequestDailog.closeDialog();
 			}
 			super.handleMessage(msg);
@@ -231,6 +234,11 @@ public class IndexNewDetailActivity extends BaseActivity implements IXListViewLi
 			comments.addAll(list);
 			commonAdapter.notifyDataSetChanged();
 		}
+		@Override
+		public void onRecevieFailed(String status, JSONObject json) {
+			super.onRecevieFailed(status, json);
+			msg_listview.setVisibility(View.VISIBLE);
+		}
 	};
 
 	@Override
@@ -238,19 +246,23 @@ public class IndexNewDetailActivity extends BaseActivity implements IXListViewLi
 		switch (view.getId()) {
 		case R.id.aci_shared_btn:
 			//分享
-			CommonUtils.showShare(this, getString(R.string.app_name), "我从"+good.getString("goods_name")+"那里获得了"+good.getString("goods_price")+"元的红包", 
-					"http://dashboard.mob.com/Uploads/1b692f6c9fceaf93c407afd889c36090.png", "");
+			CommonUtils.showShare(this, getString(R.string.app_name), 
+					"我从" + good.getString("goods_name") + "那里获得了" + good.getString("goods_price") + "元的红包", 
+					"http://dashboard.mob.com/Uploads/3d6cec44fbd284d5f1c0c59bb7a4a5f6.png", "http://www.pgyer.com/xishuashua");
 			break;
 		case R.id.layout_laud:
+			if(!CommonUtils.CheckLogin()){ Tools.toast(this, "请先登录"); return; }
 			clickfavorite();//点赞
 			break;
 		case R.id.bottom_comment:
+			if(!CommonUtils.CheckLogin()){ Tools.toast(this, "请先登录"); return; }
 			text = UIDialog.commentLayout(this, this);//写评论
 			break;
 		case R.id.bottom_comment_show:
 			msg_listview.setSelection(2);//看评论
 			break;
 		case R.id.bottom_store:
+			if(!CommonUtils.CheckLogin()){ Tools.toast(this, "请先登录"); return; }
 			clickCollect();//收藏
 			break;
 		case R.id.bottom_mobile:

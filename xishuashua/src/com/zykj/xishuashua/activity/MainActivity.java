@@ -5,11 +5,16 @@ import android.os.Bundle;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TabHost;
+import android.widget.TextView;
 
-import com.baidu.android.pushservice.PushConstants;
-import com.baidu.android.pushservice.PushManager;
+import com.alibaba.fastjson.JSONObject;
 import com.zykj.xishuashua.BaseTabActivity;
 import com.zykj.xishuashua.R;
+import com.zykj.xishuashua.Welcome;
+import com.zykj.xishuashua.http.HttpErrorHandler;
+import com.zykj.xishuashua.http.HttpUtils;
+import com.zykj.xishuashua.http.UrlContants;
+import com.zykj.xishuashua.utils.CommonUtils;
 import com.zykj.xishuashua.utils.Tools;
 import com.zykj.xishuashua.view.MyRadioButton;
 
@@ -29,6 +34,7 @@ public class MainActivity extends BaseTabActivity{
 	private static MyRadioButton m_radio_index;
 	private static MyRadioButton m_radio_restaurant;
 	private static MyRadioButton m_radio_setting;
+	private static BadgeView badgeView;
 	
 	@SuppressWarnings("deprecation")
 	@Override
@@ -59,6 +65,11 @@ public class MainActivity extends BaseTabActivity{
 		m_radio_restaurant.getLayoutParams().width = Tools.M_SCREEN_WIDTH/3;
 		m_radio_setting = (MyRadioButton) findViewById(R.id.tab_radio3);
 		m_radio_setting.getLayoutParams().width = Tools.M_SCREEN_WIDTH/3;
+
+		TextView noticeNum = (TextView) findViewById(R.id.notice_num);
+		badgeView = new BadgeView(this, noticeNum);
+		badgeView.setText("0");
+		//badgeView.hide();
 
 		m_rgroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -103,5 +114,32 @@ public class MainActivity extends BaseTabActivity{
 			m_radio_setting.setChecked(true);
 		}
 		m_tab.setCurrentTab(tabActivity);
+	}
+	
+	public static void setNoticeNum(int num){
+		if(CommonUtils.CheckLogin() && num > 0){
+			badgeView.show();
+			badgeView.setText(num+"");
+			Welcome.setNoticeNum(num+"");
+		}else{
+			badgeView.hide();
+			Welcome.setNoticeNum("");
+		}
+	}
+
+	@Override
+	@SuppressWarnings("deprecation")
+	protected void onResume() {
+		super.onResume();
+		HttpUtils.getnoticecount(new HttpErrorHandler() {
+			@Override
+			public void onRecevieSuccess(JSONObject json) {
+				MainActivity.setNoticeNum(json.getIntValue(UrlContants.jsonData));
+			}
+			@Override
+			public void onRecevieFailed(String status, JSONObject json) {
+				MainActivity.setNoticeNum(0);
+			}
+		});		
 	}
 }

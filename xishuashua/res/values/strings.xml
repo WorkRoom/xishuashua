@@ -2,7 +2,7 @@
 <resources>
 
     <!-- 常用公用字符串 -->
-    <string name="app_name">喜刷刷</string>
+    <string name="app_name">闲刷</string>
     <string name="aks_version">版本号</string>
     
     <!-- 按钮上字符串 -->
@@ -64,7 +64,7 @@
     <string name="user_gift">我的钱包</string>
     <string name="user_record">收益记录</string>
     <string name="user_store">我的收藏</string>
-    <string name="user_setting">设置</string>
+    <string name="user_setting">关于闲刷</string>
     <string name="user_info">消息提示</string>
     <string name="login_other">选用其他方式登录</string>
     <string name="login_weibo">新浪微博</string>
@@ -77,7 +77,8 @@
     <string name="user_avatar">头像</string>
     <string name="user_age">年龄</string>
     <string name="user_sex">性别</string>
-    <string name="user_address">常驻地</string>
+    <string name="user_name">用户名</string>
+    <string name="user_phone">手机号</string>
     <string name="user_pwd">密码</string>
     <string name="user_cfmpwd">确认密码</string>
     <string name="user_uptpwd">修改密码</string>
@@ -86,8 +87,10 @@
     <string name="loginout">退出登录</string>
     
     <!-- 我的钱包 -->
-    <string name="alipay_name">请输入收款人姓名</string>
+    <string name="alipay_mobile">请输入支付宝账号</string>
+    <string name="alipay_name">请输入支付宝用户名</string>
     <string name="alipay_money">请输入提现金额</string>
+    <string name="alipay_num">请输入联系人手机号</string>
     <string name="alipay_allow">可提现金额：10元</string>
     <string name="alipay_allow2">金额：10元</string>
     <string name="btn_alipay">立即提现</string>
@@ -110,7 +113,7 @@
     
     <!-- 设置 -->
     <string name="setting_about">公司简介</string>
-    <string name="setting_reading">应用说明</string>
+    <string name="setting_reading">帮助</string>
     <string name="setting_league">申请加盟</string>
     <string name="setting_version">版本更新</string>
     <string name="setting_version_default">已是最新版本</string>
@@ -134,4 +137,5 @@
     <string name="links">网站链接：www.yuming.com</string>
     <string name="message">恭喜你，从发布者名称那里获得了红包类型多少元</string>
     <string name="power_on">智能开启</string>
+    <string name="store_date">2015&#8211;06&#8211;25 收藏</string>
 </resources>
