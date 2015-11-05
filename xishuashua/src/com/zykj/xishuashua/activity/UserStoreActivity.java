@@ -12,9 +12,13 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.RelativeLayout;
+<<<<<<< HEAD
 import android.widget.TextView;
 
+=======
+>>>>>>> a9ede8940896c43dbd671b5e0be48b1378a350fc
 import com.alibaba.fastjson.JSONObject;
 import com.loopj.android.http.RequestParams;
 import com.zykj.xishuashua.BaseActivity;
@@ -39,7 +43,7 @@ public class UserStoreActivity extends BaseActivity implements IXListViewListene
 	
 	private MyCommonTitle myCommonTitle;
 	private RelativeLayout bottom_bar;
-	private TextView btn_delete;
+	private Button btn_delete;
     private XListView myListView;
 	private StoreGiftAdapter adapter;
 	private List<Gift> gifts = new ArrayList<Gift>();
@@ -62,7 +66,7 @@ public class UserStoreActivity extends BaseActivity implements IXListViewListene
 		myCommonTitle.setLisener(this, null);
 		myCommonTitle.setTitle("我的收藏");
 		bottom_bar = (RelativeLayout)findViewById(R.id.bottom_bar);
-		btn_delete = (TextView)findViewById(R.id.btn_delete);
+		btn_delete = (Button)findViewById(R.id.btn_delete);
 		setListener(btn_delete);
 		
 		myListView = (XListView)findViewById(R.id.advert_listview);
