@@ -14,11 +14,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.RelativeLayout;
-<<<<<<< HEAD
-import android.widget.TextView;
 
-=======
->>>>>>> a9ede8940896c43dbd671b5e0be48b1378a350fc
 import com.alibaba.fastjson.JSONObject;
 import com.loopj.android.http.RequestParams;
 import com.zykj.xishuashua.BaseActivity;
