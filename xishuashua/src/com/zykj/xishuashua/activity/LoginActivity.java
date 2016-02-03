@@ -167,14 +167,6 @@ public class LoginActivity extends BaseActivity implements Callback,PlatformActi
 			}
 		}, BaseApp.getModel().getChannelid());
 	}
-	
-	@Override
-	protected void onResume() {
-		super.onResume();
-		if(thirdLogin == 1){
-			MyRequestDailog.showDialog(this, "");
-		}
-	}
 
 	@Override
 	protected void onPause() {

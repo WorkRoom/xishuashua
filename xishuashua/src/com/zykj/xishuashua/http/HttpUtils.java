@@ -189,17 +189,17 @@ public class HttpUtils {
     public static void available_predeposit(AsyncHttpResponseHandler handler){
     	client.post(UrlContants.getUrl(UrlContants.AVAILABLEPREDEPOSIT), handler);
     }
-   
+    
     /*手机充值*/
     public static void phonerecharge(AsyncHttpResponseHandler handler, RequestParams params){
     	client.post(UrlContants.getUrl(UrlContants.PHONERECHARGE), params, handler);
     }
-   
+    
     /*获取推送状态*/
     public static void getpushstate(AsyncHttpResponseHandler handler){
     	client.post(UrlContants.getUrl(UrlContants.SWITCHSTATE), handler);
     }
-   
+    
     /*设置推送开关*/
     public static void setpushstate(AsyncHttpResponseHandler handler){
     	client.post(UrlContants.getUrl(UrlContants.SETPUSHSWITCH), handler);

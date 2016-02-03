@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.ToggleButton;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baidu.android.pushservice.PushManager;
 import com.zykj.xishuashua.BaseActivity;
 import com.zykj.xishuashua.R;
 import com.zykj.xishuashua.http.HttpErrorHandler;
@@ -44,7 +45,7 @@ public class UserMessageActivity extends BaseActivity{
 		HttpUtils.getpushstate(new HttpErrorHandler() {
 			@Override
 			public void onRecevieSuccess(JSONObject json) {
-				statu = json.getInteger("data");
+				statu = json.getIntValue("data");
 				toggle_push.setChecked(1 == statu);
 			}
 		});
@@ -80,10 +81,16 @@ public class UserMessageActivity extends BaseActivity{
 			HttpUtils.setpushstate(new HttpErrorHandler() {
 				@Override
 				public void onRecevieSuccess(JSONObject json) {
-					if(1 == statu && "1".equals(json.toString())){
+					if(1 == statu && 1==json.getIntValue("result")){
+						statu=0;
 						toggle_push.setChecked(false);
-					}else if(0 == statu && "1".equals(json.toString())){
+						if(PushManager.isPushEnabled(UserMessageActivity.this))
+							PushManager.stopWork(UserMessageActivity.this);
+					}else if(0 == statu && 1==json.getIntValue("result")){
+						statu=1;
 						toggle_push.setChecked(true);
+						if(!PushManager.isPushEnabled(UserMessageActivity.this))
+							PushManager.resumeWork(UserMessageActivity.this);
 					}
 				}
 			});

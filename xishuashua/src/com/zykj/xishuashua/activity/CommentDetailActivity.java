@@ -65,7 +65,7 @@ public class CommentDetailActivity extends BaseActivity implements IXListViewLis
 
 	private void initView() {
 		myCommonTitle = (MyCommonTitle)findViewById(R.id.aci_mytitle);
-		myCommonTitle.setTitle("评论");
+		myCommonTitle.setTitle("评论回复");
 
 		super_image = (ImageView)findViewById(R.id.super_image);//父评论头像
 		comment_name = (TextView)findViewById(R.id.comment_name);//父评论昵称

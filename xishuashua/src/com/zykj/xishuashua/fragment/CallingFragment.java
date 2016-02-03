@@ -95,7 +95,7 @@ public class CallingFragment extends Fragment implements OnClickListener{
 						dialog.dismiss();
 					}
 					@Override
-					public void onLeftBtnClick(Dialog dialog) {
+					public void onLeftBtnClick(final Dialog dialog) {
 						RequestParams params = new RequestParams();
 						params.put("pdc_amount", money);
 						params.put("pdc_bank_name", "手机充值");
@@ -103,9 +103,10 @@ public class CallingFragment extends Fragment implements OnClickListener{
 						HttpUtils.phonerecharge(new HttpErrorHandler() {
 							@Override
 							public void onRecevieSuccess(JSONObject json) {
+								dialog.dismiss();
 								Tools.toast(getActivity(), "申请充值成功，我们将会在1-3工作日内审核充值！");
 								getmemberenvelopes();
-								aci_mobile.setText("");
+//								aci_mobile.setText("");
 							}
 							@Override
 							public void onRecevieFailed(String status, JSONObject json) {

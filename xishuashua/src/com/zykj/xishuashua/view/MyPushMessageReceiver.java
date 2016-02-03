@@ -80,7 +80,7 @@ public class MyPushMessageReceiver extends PushMessageReceiver {
     			}
     		}, BaseApp.getModel().getChannelid());
         }
-        Log.d(TAG, responseString);
+        Log.e(TAG, responseString);
     }
 
     /**

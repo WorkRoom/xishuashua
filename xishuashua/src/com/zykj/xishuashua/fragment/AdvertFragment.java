@@ -35,7 +35,7 @@ public class AdvertFragment extends Fragment implements IXListViewListener,OnIte
 
     private String isperpetual="1";//1即时红包 0永久红包
 
-	private static final String NUM = "5";//每页显示条数
+	private static final String NUM = "20";//每页显示条数
 	private int page = 1;
 	private List<Gift> gifts = new ArrayList<Gift>();
 	private GiftAdapter adapter;

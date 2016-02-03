@@ -86,7 +86,7 @@ public class IndexActivity extends BaseActivity implements OnItemClickListener{
 	private void initView(){
 		/*头部标题*/
 		myCommonTitle = (MyCommonTitle)findViewById(R.id.aci_mytitle);
-		myCommonTitle.setTitle("喜刷刷");
+		myCommonTitle.setTitle("闲刷");
 		myCommonTitle.setBackBtnVisible(false);
 		myCommonTitle.setLisener(null, this);
 		
@@ -215,6 +215,7 @@ public class IndexActivity extends BaseActivity implements OnItemClickListener{
 			imageView.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View view) {
+					if(!CommonUtils.CheckLogin()){Tools.toast(IndexActivity.this, "请先登录"); return;}
 					int index = Integer.valueOf(view.getId());
 					startActivity(new Intent(IndexActivity.this, GiftDetailActivity.class)
 						.putExtra("goods_id", specialList.get(index).getGoods_id()).putExtra("saw", specialList.get(index).getGoods_id()));
@@ -230,7 +231,7 @@ public class IndexActivity extends BaseActivity implements OnItemClickListener{
 		case R.id.aci_shared_btn:
 			/*App分享*/
 			CommonUtils.storeImageToSDCARD(this);
-			CommonUtils.showShare(this, getString(R.string.app_name), "喜刷刷是一款可以边看新闻边抢红包的App", 
+			CommonUtils.showShare(this, getString(R.string.app_name), "闲刷是一款可以边看新闻边抢红包的App", 
 					"http://dashboard.mob.com/Uploads/3d6cec44fbd284d5f1c0c59bb7a4a5f6.png", "http://www.pgyer.com/xishuashua");
 			break;
 		case R.id.index_image1:

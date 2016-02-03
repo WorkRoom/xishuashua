@@ -101,7 +101,7 @@ public class AlipayFragment extends Fragment implements OnClickListener{
 						dialog.dismiss();
 					}
 					@Override
-					public void onLeftBtnClick(Dialog dialog) {
+					public void onLeftBtnClick(final Dialog dialog) {
 						RequestParams params = new RequestParams();
 						params.put("pdc_amount", Float.valueOf(money));//提现金额
 						params.put("pdc_bank_name", "支付宝");
@@ -111,12 +111,13 @@ public class AlipayFragment extends Fragment implements OnClickListener{
 						HttpUtils.paCashAdd(new HttpErrorHandler() {
 							@Override
 							public void onRecevieSuccess(JSONObject json) {
+								dialog.dismiss();
 								Tools.toast(getActivity(), "申请提现成功，我们将会在1-3工作日内审核提现！");
 								getmemberenvelopes();
-								aci_mobile.setText("");
-								aci_name.setText("");
-								aci_money.setText("");
-								aci_num.setText("");
+//								aci_mobile.setText("");
+//								aci_name.setText("");
+//								aci_money.setText("");
+//								aci_num.setText("");
 							}
 							@Override
 							public void onRecevieFailed(String status, JSONObject json) {

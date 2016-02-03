@@ -61,7 +61,7 @@ public class GiftAdapter extends CommonAdapter<Gift> {
 				.setText(R.id.gift_btn, "0".equals(gift.getSaw())?"已抢过":"0".equals(status)?"抢红包"+
 								gift.getGoods_price()+"元":continueTime>1?"抢红包"+gift.getGoods_price()+"元":"已过期")//抢红包按钮
 				.setText(R.id.gift_date1, sellTime+"发布").setText(R.id.gift_date2, sellTime+"发布")//发布时间
-				.setText(R.id.gift_type, "0".equals(gift.getGrade_id())?"个人红包":"2".equals(gift.getGrade_id())?"商家红包":"app红包")//红包分类
+				.setText(R.id.gift_type, "1".equals(gift.getGrade_id())?"个人红包":"2".equals(gift.getGrade_id())?"商家红包":"app红包")//红包分类
 				.setText(R.id.gift_label, gift.getGoods_serial())//兴趣标签
 				.setVisibility(R.id.gift_type, !"2".equals(status))//红包分类是否显示
 				.setVisibility(R.id.gift_date1, "0".equals(status))

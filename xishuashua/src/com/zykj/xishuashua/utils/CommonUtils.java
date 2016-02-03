@@ -102,7 +102,7 @@ public class CommonUtils {
 			}
 		});
 		// title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间使用
-		oks.setTitle(title);//喜刷刷
+		oks.setTitle(title);//闲刷
 		// titleUrl是标题的网络链接，仅在人人网和QQ空间使用
 		oks.setTitleUrl("http://www.bangm.net");
 		// text是分享文本，所有平台都需要这个字段
